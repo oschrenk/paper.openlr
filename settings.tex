@@ -1,0 +1,32 @@
+% LAYOUT
+\usepackage{geometry}
+\geometry{a4paper, textwidth=5.5in, textheight=8.5in, marginparsep=7pt, marginparwidth=.6in}
+\setlength\parindent{0in}
+
+% TYPOGRAPHY
+\usepackage{fontspec} 
+\defaultfontfeatures{Mapping=tex-text} % converts LaTeX specials (``quotes'' --- dashes etc.) to unicode
+\setromanfont [BoldFont={Gentium Basic Bold}, ItalicFont={Gentium Basic Italic}]{Gentium Basic}
+\setmonofont[Scale=0.8]{Monaco} 
+% ---- CUSTOM AMPERSAND
+\newcommand{\amper}{{\fontspec[Scale=.95]{Gentium Basic Italic}\selectfont\itshape\&}}
+% ---- MARGIN YEARS
+\newcommand{\years}[1]{\marginpar{\footnotesize #1}}
+
+	% HEADINGS
+	\usepackage{sectsty} 
+	\usepackage[normalem]{ulem} 
+	\sectionfont{\rmfamily\mdseries\upshape\Large}
+	\subsectionfont{\rmfamily\bfseries\upshape\normalsize} 
+	\subsubsectionfont{\rmfamily\mdseries\upshape\normalsize} 
+
+% GRAPHICS
+% For graphics / images
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\graphicspath{{fig/}}
+
+% PDF
+% ---- FILL IN HERE THE DOC TITLE AND AUTHOR
+\usepackage[dvipdfm, bookmarks, colorlinks, breaklinks, pdftitle={Albert Einstein - vita},pdfauthor={My name}]{hyperref}  
+\hypersetup{linkcolor=blue,citecolor=blue,filecolor=black,urlcolor=blue} 
