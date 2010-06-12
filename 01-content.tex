@@ -1,32 +1,36 @@
 \section{Introduction}
 \label{sec:introduction}
 
-In the context of vehicle to vehicle or vehicle to infrastructure communication, communication often involves the exchange of spatial information to anchor specific data to a specific location, being it a point, a line or an area.
+In the context of vehicle-to-vehicle (V2V) or vehicle-to-infrastructure (V2I) communication, communication often involves the exchange of spatial information to anchor data to a specific location, be it a point, a line or an area.
 
-An example for this is the RDS-TMC standard that is mainly used to inform about the  traffic situation such as traffic jams. RDS-TMC uses pre encoded locations to communicate the location. Every member has to have the same idea, speak the same version of a lookup table to understand what the other members are talking about. It is obvious that while the system works very efficient it can't scale to describe all possible roads or locations. 
+An example for system that broadcasts such information is the Radio Data System Traffic Message Channel , or short RDS-TMC \cite{tmc} standard (maintained by the Traveller Information Service Association \cite{TISA}) that is used to propagate information about the traffic situation such as the length traffic jams or the location of accidents and weather conditions. RDS-TMC makes use of a lookup table in which events and a locations are assigned to unique identifiers. In order to work correctly the receiver has to use the same version of the lookup table as the broadcaster. It is obvious that while the system works very efficient it can not scale to describe all possible roads or locations. 
 
-Location referencing systems such as Open LR\tm try to solve the problem of communicating locations in a different way. It relies on communicating real world properties such as the geocoded location using GPS to communicate a location The problem is that two different parties can have different ideas of where a location might be, because they can have access to different maps. 
+Location referencing systems such as Open LR\tm try to solve the problem of exchanging information about locations in a more dynamic approach. The rely on communicating real world properties such as the geo-coded location using GPS\footnote{Global Positioning System} to describe a location. The problem is that two different parties can have different understandings of where a location might be, because they have access to different maps.
 
 \section{Open LR\tm}
 \label{sec:open_lr}
 
-Open LR\tm tries to solve the problem to exchange the properties of a location unambiguously with a second party regardless of map differences. 
+Open LR\tm tries to solve the problem of exchanging location properties unambiguously with a second party regardless of map differences. 
 
-The main idea behind Open LR\tm is to make use of the shortest path algorithm. It tries to reduce the number of edges and nodes by computing a series of shortest path that covers the location. Each of these shortest path can be defined only by their start and end nodes, so that only a series of nodes have to used to encode a location. The decoding party then matches these point to his own map and also runs a series of shortest path algorithms to determine the location being referenced.
+% TODO Was wird bei Open LR als Location verstanden
 
-To do so the Open LR\tm standard relies on a few features or rather qualities of a map. The system needs access to the geocoded locations of each node (using WGS84). Each edge or line should know about the real world geometry, such as the length in meter. Also the the standard explicitly asks to support two attributes for each road, the \emph{form of way }and a \emph{functional road class}.
+The main idea of Open LR\tm is to make use of the shortest path algorithm. It tries to reduce the number of edges and nodes by computing a series of shortest paths that covers the location. Each of these shortest paths can be defined only by their start and end node, so that only a short series of nodes have to be used to encode a location. The decoding party then matches these point to its own map and runs a series of shortest path algorithms to determine the location being referenced.
 
-The form of way describes the physical appearance that a line takes in real life, such as a motor-way, a multiple/single carriage-way or for instance a traffic square, while the functional road class is a more abstract classification based on the importance of a road. Possible values range from 0, as a main road to 7, as road of unknown or less importance. These attributes help to find the right candidates when trying to decode the location reference.
+To do so Open LR\tm relies on a few features or rather qualities of a map. The system needs access to the geo-coded locations of each node (using WGS84 ???). Each edge should know about the real world geometry, such as the length in meter. Also the the standard explicitly asks to support two attributes for each road, the \emph{form of way }and a \emph{functional road class}.
+
+The form of way describes the physical appearance that an edge takes in real life, a motor-way, a multiple/single carriage-way or a traffic square. The functional road class is a more abstract classification based on the importance of a road. Possible values range from 0, as a main road, to 7, as a road of less or unknown importance. These attributes help to find the right candidate nodes and edges when trying to decode the location reference.
 
 \emph{Both maps, the encoder map, and the decoder map should meet certain \"navigable standards\" in terms accuracy and content.  describe a a graph describing the street network.}. This papers explores and questions the idea of what \"navigable standard\" standards means.
 
-Each map, each street network can be described as a graph, the connection of various nodes, of which the geographical location is known. Ideally these nodes represent crossroads in real life.
+%TODO das geht besser
+
+A street network can be described as a graph, the connection of various nodes, of which the geographical location is known. Ideally these nodes represent crossroads in real life.
 
 A location can be defined by a series of nodes. As the protocol will be heavily used by mobile systems, ideas to efficiently compress the information is needed. In order to reduce the number of points that have to be communicated Open LR\tm employs a shortest path algorithm. If the way the driver has chosen happens to be the shortest path between the two outer most nodes describing his way, Open LR\tm binary encodes the location as a location reference in a compact way and pushes it to the communication interface. If the shortest path differs from the way the driver tries to communicate, Open LR takes the node at which the way differs as a supporting node and starts the shortest algorithm between this node and the end node until the location reference is found.
 
 In short Open LR\tm builds a location reference by calculating the shortest path between two nodes, saving the the differences between the real location and the location reference. The position of the  starting node is encoded absolutely, while the positions of all following nodes are saved relative to the first, thus saving space. Furthermore Open LR saves information such as the form of way, the functional road class and the bearing of the road to help the decoding party find the correct node.
 
-The decoding party takes the information given and tries to map the encoded nodes to its network, having hopefully access to the same kind of information, but realistically relying on different maps and data sets. Often the data provided by the underlying systems differs from the encoded data. The decoding algorithm has to implement heuristic methods to match the geocoded node to one of the nodes stored in system of the decoding party. While this can be done with simple geometric calculations, the extra information, such as the form of way, the functional road class, and also the bearing might help the system find the correct candidate, if there are multiple choices.
+The decoding party takes the information given and tries to map the encoded nodes to its network, having hopefully access to the same kind of information, but realistically relying on different maps and data sets. Often the data provided by the underlying systems differs from the encoded data. The decoding algorithm has to implement heuristic methods to match the geo-coded node to one of the nodes stored in system of the decoding party. While this can be done with simple geometric calculations, the extra information, such as the form of way, the functional road class, and also the bearing might help the system find the correct candidate, if there are multiple choices.
 
 \section{Example}
 \label{sec:open-lr-example}
@@ -95,7 +99,7 @@ How exactly the decoding party should select is not exactly specified, but it is
 
 If the candidates have been chosen and accordingly matched to nodes of the decoding party, the decoding party in turn calculates the shortest path between sequential pairs of the transmitted location reference points.
 
-The decoder should fail if it doesn't find matching nodes or lines according to his employed metrics.
+The decoder should fail if it does not find matching nodes or lines according to his employed metrics.
 
 \section{Problem} 
 \label{sec:openlr-problem}
@@ -106,7 +110,7 @@ The concept of Open LR relies heavily on the shortest path algorithm. This makes
 
 The algorithm has a rather crucial problem. It might communicate the wrong location if the idea of the shortest path between two nodes differ on the decoder. While this case should be rather seldom, especially in well mapped urban areas, it could happen in not so densely populated or rarely visited areas.
 
-Consider the same example as above, but now the decoding map has one additional link between node 3 and node 5. In reality this case could mean that a bypass has been built and that the map data of the encoding party hasn't been updated no include the change. In more abstract terms this problem describes just the case that two different links are candidates for the decoder leaving it up to the implementation to choose the correct or incorrect one or even fail completely. 
+Consider the same example as above, but now the decoding map has one additional link between node 3 and node 5. In reality this case could mean that a bypass has been built and that the map data of the encoding party has not been updated no include the change. In more abstract terms this problem describes just the case that two different links are candidates for the decoder leaving it up to the implementation to choose the correct or incorrect one or even fail completely. 
 
 \begin{figure}
   \includegraphics{fig/openlr-decoding-2.pdf}%
@@ -114,7 +118,7 @@ Consider the same example as above, but now the decoding map has one additional 
   \label{fig:openlr-decoding-2}%
 \end{figure}
 
-The decoder doesn't have a problem choosing the right candidate node in terms of the geocoded location, for the sake of the argument they are the same. The implementation shouldn't be thrown off by the fact that there is another link when choosing the candidate node.
+The decoder does not have a problem choosing the right candidate node in terms of the geo-coded location, for the sake of the argument they are the same. The implementation should not be thrown off by the fact that there is another link when choosing the candidate node.
 
 It might have problems though when calculating the shortest path though. The new link has the same functional road class and the same form of way. There are two informations that (might) deviate though, the bearing and the length.
 
@@ -131,13 +135,13 @@ Therefore the third path is chosen. The shortest path that has been calculated i
 Keep in mind that according to the physical data specification the bearing is exact for up to 11.25 \degree and the length up to 58.6m. The location reference point that 
 has been transmitted had a bearing of 135\degree and a distance to next point (DNP) of 561m which translates to, when being binary encoded regarding the Open LR specifications, to a bearing of 135\degree - 146.25\degree and a DNP of 527.4m - 586m.
 
-Assuming that the new link has bearing that doesn't fall into the given range, the decoder has two choices: Either to fail completely or to choose the next candidate, taking the bearing into account as a criterium when choosing the shortest link.
+Assuming that the new link has bearing that does not fall into the given range, the decoder has two choices: Either to fail completely or to choose the next candidate, taking the bearing into account as a criterium when choosing the shortest link.
 
 If the new link has bearing that falls into the range that the other link has, they might just be 10\degree apart, the decoder can either choose a path non deterministically or fail.
 
-The problem is even worse if the new edge doesn't start at a new node. The decoder looses the extra information of the bearing and can only rely the length. If the new road happens to be of similar length, the decoder can't choose the correct node. If the alternate route, the correct route in this case, happens to be closed and therefore non-existent on the second map the decoder chooses the wrong road.
+The problem is even worse if the new edge does not start at a new node. The decoder looses the extra information of the bearing and can only rely the length. If the new road happens to be of similar length, the decoder cannot choose the correct node. If the alternate route, the correct route in this case, happens to be closed and therefore non-existent on the second map the decoder chooses the wrong road.
 
-What the decoder does is up to the implementation and may even relate to the use case the location reference is being used for. There might be case where a wrong location reference might not be so bad, but for all use cases involving the security of the vehicle and human life  errors like that can't be tolerated.
+What the decoder does is up to the implementation and may even relate to the use case the location reference is being used for. There might be case where a wrong location reference might not be so bad, but for all use cases involving the security of the vehicle and human life  errors like that cannot be tolerated.
 
 \section{Conclusion}
 \label{sec:conclusion}
