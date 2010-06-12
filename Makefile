@@ -4,8 +4,8 @@ pdf:
 	echo ${MAIN_FILE}.tex
 	xelatex ${MAIN_FILE}.tex
 	#makeindex ${MAIN_FILE}.idx
-	#bibtex ${MAIN_FILE}.aux
-	#xelatex ${MAIN_FILE}.tex
+	bibtex ${MAIN_FILE}.aux
+	xelatex ${MAIN_FILE}.tex
 	xelatex ${MAIN_FILE}.tex
 	
 clean:
