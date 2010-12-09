@@ -1,1 +1,16 @@
+*.aux
+*.bbl
+*.blg
+*.bst
+*.dvi
+*.idx
+*.lof
+*.log
 *.pdf
+*.toc
+*.out
+*.synctex.gz
+*.glo
+*.ind
+*.ilg
+*.pdfsync
